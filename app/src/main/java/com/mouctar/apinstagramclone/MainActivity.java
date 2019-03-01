@@ -2,6 +2,7 @@ package com.mouctar.apinstagramclone;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,7 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button btnSave, btnGetAllData;
+    private Button btnSave, btnGetAllData, btnTransition;
     private EditText edtName, edtPunchSpeed, edtPunchPower, edtKickSpeed, edtKickPower;
     private TextView txtGetData;
     private String allKickBoxers;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         edtKickPower = findViewById(R.id.edtKickPower);
         txtGetData = findViewById(R.id.txtGetData);
         btnGetAllData = findViewById(R.id.btnGetAllData);
+        btnTransition = findViewById(R.id.btnNextActivity);
 
         txtGetData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,24 +60,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnGetAllData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                allKickBoxers="";
-                ParseQuery<ParseObject> queryAll=ParseQuery.getQuery("KickBoxer");
+                allKickBoxers = "";
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("KickBoxer");
+                // queryAll.whereGreaterThan("punchPower", 1000);
+                //queryAll.whereEqualTo("punchPower", 900);
+                queryAll.setLimit(1);
+
                 queryAll.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
-                        if(e==null){
-                            if(objects.size()>0){
-                                for(ParseObject kickBoxer: objects){
-                                    allKickBoxers=allKickBoxers+kickBoxer.get("name")+"\n";
+                        if (e == null) {
+                            if (objects.size() > 0) {
+                                for (ParseObject kickBoxer : objects) {
+                                    allKickBoxers = allKickBoxers + kickBoxer.get("name") + "\n";
                                 }
 
                                 FancyToast.makeText(MainActivity.this, allKickBoxers, FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
-                            }else{
+                            } else {
                                 FancyToast.makeText(MainActivity.this, e.getMessage(), FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
                             }
                         }
                     }
                 });
+            }
+        });
+
+        btnTransition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SignUpLoginActivity.class);
+                startActivity(intent);
             }
         });
     }
